@@ -7,7 +7,14 @@ import '../../utils/app_constants.dart';
 import '../splash/splash_screen.dart';
 import '../login/login_screen.dart';
 import '../login/registration_screen.dart';
+import '../login/role_selection_screen.dart';
+import '../login/officer_login_screen.dart';
+import '../login/officer_registration_screen.dart';
+import '../login/user_login_screen.dart';
+import '../login/user_registration_screen.dart';
 import '../main/main_screen.dart';
+import '../officer/officer_dashboard.dart';
+import '../user/user_dashboard.dart';
 import '../fine/fine_entry_screen.dart';
 import '../payment/payment_screen.dart';
 import '../confirmation/confirmation_screen.dart';
@@ -19,6 +26,37 @@ final appRouter = GoRouter(
       path: AppConstants.routeSplash,
       builder: (_, __) => const SplashScreen(),
     ),
+    GoRoute(
+      path: AppConstants.routeRoleSelection,
+      builder: (_, __) => const RoleSelectionScreen(),
+    ),
+    // Officer Routes
+    GoRoute(
+      path: AppConstants.routeOfficerLogin,
+      builder: (_, __) => const OfficerLoginScreen(),
+    ),
+    GoRoute(
+      path: AppConstants.routeOfficerRegister,
+      builder: (_, __) => const OfficerRegistrationScreen(),
+    ),
+    GoRoute(
+      path: AppConstants.routeOfficerDashboard,
+      builder: (_, __) => const OfficerDashboard(),
+    ),
+    // User Routes
+    GoRoute(
+      path: AppConstants.routeUserLogin,
+      builder: (_, __) => const UserLoginScreen(),
+    ),
+    GoRoute(
+      path: AppConstants.routeUserRegister,
+      builder: (_, __) => const UserRegistrationScreen(),
+    ),
+    GoRoute(
+      path: AppConstants.routeUserDashboard,
+      builder: (_, __) => const UserDashboard(),
+    ),
+    // Legacy Routes (for backward compatibility)
     GoRoute(
       path: AppConstants.routeLogin,
       builder: (_, __) => const LoginScreen(),

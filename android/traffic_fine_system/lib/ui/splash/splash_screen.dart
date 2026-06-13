@@ -39,7 +39,17 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     final tokenManager = ref.read(tokenManagerProvider);
     final loggedIn = await tokenManager.isLoggedIn();
     if (!mounted) return;
-    context.go(loggedIn ? AppConstants.routeMain : AppConstants.routeLogin);
+    
+    if (loggedIn) {
+      final userRole = await tokenManager.getUserRole();
+      if (!mounted) return;
+      final route = userRole.value == 'OFFICER' 
+          ? AppConstants.routeOfficerDashboard 
+          : AppConstants.routeUserDashboard;
+      context.go(route);
+    } else {
+      context.go(AppConstants.routeRoleSelection);
+    }
   }
 
   @override
