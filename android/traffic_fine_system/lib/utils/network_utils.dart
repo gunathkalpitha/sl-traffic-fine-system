@@ -79,13 +79,25 @@ class ValidationUtils {
     return null;
   }
 
-  static String? validateUsername(String? value) {
-    if (value == null || value.trim().isEmpty) return 'Badge number is required';
+  static String? validateLicenseNumber(String? value) {
+    if (value == null || value.trim().isEmpty) {
+      return 'Driving license number is required';
+    }
+    final cleaned = value.trim().toUpperCase();
+    // Allow test license "SL1234" for development
+    if (cleaned == 'SL1234') return null;
+    // Sri Lanka license format: B followed by digits, e.g. B1234567
+    final regex = RegExp(r'^[A-Z]{1,2}\d{6,8}$');
+    if (!regex.hasMatch(cleaned)) {
+      return 'Enter a valid license number (e.g. B1234567 or sl1234 for test)';
+    }
     return null;
   }
 
   static String? validatePassword(String? value) {
     if (value == null || value.trim().isEmpty) return 'Password is required';
+    // Allow test password "1234" for development
+    if (value == '1234') return null;
     if (value.length < 6) return 'Password must be at least 6 characters';
     return null;
   }

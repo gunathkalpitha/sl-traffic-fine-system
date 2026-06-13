@@ -13,6 +13,27 @@ class AuthRepository {
 
   Future<LoginResponse> login(String username, String password) async {
     try {
+      // Mock login for development (testing credentials)
+      // Username is converted to uppercase in login screen: "sl1234" → "SL1234"
+      if (username == 'SL1234' && password == '1234') {
+        final mockResponse = LoginResponse(
+          accessToken: 'mock_token_dev_12345',
+          tokenType: 'Bearer',
+          expiresIn: 3600,
+          officerName: 'Test Officer',
+          badgeNumber: 'SL1234',
+          district: 'Western Province',
+        );
+        await _tokenManager.saveToken(mockResponse.accessToken);
+        await _tokenManager.saveOfficerInfo(
+          name: mockResponse.officerName,
+          badge: mockResponse.badgeNumber,
+          district: mockResponse.district,
+        );
+        return mockResponse;
+      }
+
+      // Real API call (when backend is ready)
       final response = await _apiService.login(
         LoginRequest(username: username, password: password),
       );

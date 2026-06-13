@@ -6,6 +6,7 @@ import '../../data/model/payment_response.dart';
 import '../../utils/app_constants.dart';
 import '../splash/splash_screen.dart';
 import '../login/login_screen.dart';
+import '../login/registration_screen.dart';
 import '../main/main_screen.dart';
 import '../fine/fine_entry_screen.dart';
 import '../payment/payment_screen.dart';
@@ -21,6 +22,10 @@ final appRouter = GoRouter(
     GoRoute(
       path: AppConstants.routeLogin,
       builder: (_, __) => const LoginScreen(),
+    ),
+    GoRoute(
+      path: AppConstants.routeRegister,
+      builder: (_, __) => const RegistrationScreen(),
     ),
     GoRoute(
       path: AppConstants.routeMain,

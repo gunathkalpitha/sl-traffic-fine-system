@@ -6,8 +6,10 @@ class AppConstants {
   // Routes
   static const String routeSplash = '/';
   static const String routeLogin = '/login';
+  static const String routeRegister = '/register';
   static const String routeMain = '/main';
   static const String routeFineEntry = '/fine-entry';
+  static const String routeFineDetails = '/fine-details';
   static const String routePayment = '/payment';
   static const String routeConfirmation = '/confirmation';
 
