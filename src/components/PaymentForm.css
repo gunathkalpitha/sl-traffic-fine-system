@@ -1,0 +1,40 @@
+.payment-form__method-group {
+  margin-bottom: 1rem;
+}
+
+.payment-form__method-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-text);
+  display: block;
+  margin-bottom: 0.4rem;
+}
+
+.payment-form__methods {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.payment-form__method-btn {
+  padding: 0.4rem 0.75rem;
+  font-size: 0.82rem;
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius);
+  background: #fff;
+  color: var(--color-text-muted);
+  transition: all 0.15s;
+}
+
+.payment-form__method-btn--active {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  background: #eff6ff;
+  font-weight: 600;
+}
+
+.payment-form__row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
