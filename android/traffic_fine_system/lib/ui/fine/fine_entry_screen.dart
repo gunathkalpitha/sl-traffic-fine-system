@@ -82,7 +82,7 @@ class _FineEntryScreenState extends ConsumerState<FineEntryScreen> {
               ),
               const SizedBox(height: 20),
               DropdownButtonFormField<String>(
-                value: _selectedCategory,
+                initialValue: _selectedCategory,
                 decoration: const InputDecoration(
                   labelText: 'Fine Category',
                   prefixIcon: Icon(Icons.category_outlined),
