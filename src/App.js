@@ -11,7 +11,7 @@ function App() {
       <div className="app-wrapper">
         <header className="app-header">
           <div className="app-header__inner">
-            <span className="app-header__logo">🚔</span>
+            <span className="app-header__logo"></span>
             <span className="app-header__title">Sri Lanka Traffic Fine Payment</span>
           </div>
         </header>
