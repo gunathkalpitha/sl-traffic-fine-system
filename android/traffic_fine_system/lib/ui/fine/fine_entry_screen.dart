@@ -49,7 +49,10 @@ class _FineEntryScreenState extends ConsumerState<FineEntryScreen> {
     });
 
     final state = ref.watch(fineViewModelProvider);
-    final isLoading = state is _Loading;
+    final isLoading = state.maybeWhen(
+      loading: () => true,
+      orElse: () => false,
+    );
 
     return Scaffold(
       appBar: AppBar(

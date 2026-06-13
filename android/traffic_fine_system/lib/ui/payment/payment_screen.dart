@@ -91,7 +91,10 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
     });
 
     final state = ref.watch(paymentViewModelProvider);
-    final isProcessing = state is _Processing;
+    final isProcessing = state.maybeWhen(
+      processing: () => true,
+      orElse: () => false,
+    );
 
     return Scaffold(
       appBar: AppBar(
@@ -220,7 +223,7 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
                           ),
                           borderRadius: BorderRadius.circular(10),
                           color: selected
-                              ? const Color(0xFF003087).withOpacity(0.07)
+                              ? const Color(0xFF003087).withValues(alpha: 0.07)
                               : null,
                         ),
                         child: Text(

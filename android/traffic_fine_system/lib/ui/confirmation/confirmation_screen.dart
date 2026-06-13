@@ -31,7 +31,7 @@ class ConfirmationScreen extends StatelessWidget {
                 width: 100,
                 height: 100,
                 decoration: BoxDecoration(
-                  color: const Color(0xFF1B7F3E).withOpacity(0.1),
+                  color: const Color(0xFF1B7F3E).withValues(alpha: 0.1),
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(
@@ -165,7 +165,7 @@ class _DetailRow extends StatelessWidget {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF1B7F3E).withOpacity(0.12),
+                  color: const Color(0xFF1B7F3E).withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(

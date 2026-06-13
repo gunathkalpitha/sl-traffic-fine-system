@@ -46,7 +46,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     });
 
     final state = ref.watch(loginViewModelProvider);
-    final isLoading = state is _Loading;
+    final isLoading = state.maybeWhen(
+      loading: () => true,
+      orElse: () => false,
+    );
 
     return Scaffold(
       backgroundColor: const Color(0xFF003087),

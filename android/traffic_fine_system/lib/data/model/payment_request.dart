@@ -19,18 +19,3 @@ class PaymentRequest with _$PaymentRequest {
   factory PaymentRequest.fromJson(Map<String, dynamic> json) =>
       _$PaymentRequestFromJson(json);
 }
-
-// lib/data/model/payment_response.dart
-@freezed
-class PaymentResponse with _$PaymentResponse {
-  const factory PaymentResponse({
-    required bool success,
-    required String message,
-    String? paymentId,
-    String? transactionId,
-    Payment? payment,
-  }) = _PaymentResponse;
-
-  factory PaymentResponse.fromJson(Map<String, dynamic> json) =>
-      _$PaymentResponseFromJson(json);
-}

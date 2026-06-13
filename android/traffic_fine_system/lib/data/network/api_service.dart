@@ -1,35 +1,69 @@
 // lib/data/network/api_service.dart
 import 'package:dio/dio.dart';
-import 'package:retrofit/retrofit.dart';
 import '../model/fine.dart';
 import '../model/login_request.dart';
 import '../model/login_response.dart';
 import '../model/payment_request.dart';
 import '../model/payment_response.dart';
 
-part 'api_service.g.dart';
+class ApiService {
+  final Dio _dio;
+  final String baseUrl;
 
-@RestApi()
-abstract class ApiService {
-  factory ApiService(Dio dio, {String baseUrl}) = _ApiService;
+  ApiService(this._dio, {this.baseUrl = ''}) {
+    if (baseUrl.isNotEmpty) {
+      _dio.options.baseUrl = baseUrl;
+    }
+  }
 
   // Auth
-  @POST('/auth/login')
-  Future<LoginResponse> login(@Body() LoginRequest request);
+  Future<LoginResponse> login(LoginRequest request) async {
+    try {
+      final response = await _dio.post(
+        '/auth/login',
+        data: request.toJson(),
+      );
+      return LoginResponse.fromJson(response.data);
+    } catch (e) {
+      rethrow;
+    }
+  }
 
   // Fine
-  @GET('/fines/{referenceNumber}')
   Future<Fine> getFineDetails(
-    @Path('referenceNumber') String referenceNumber,
-    @Query('categoryId') String categoryId,
-  );
+    String referenceNumber,
+    String categoryId,
+  ) async {
+    try {
+      final response = await _dio.get(
+        '/fines/$referenceNumber',
+        queryParameters: {'categoryId': categoryId},
+      );
+      return Fine.fromJson(response.data);
+    } catch (e) {
+      rethrow;
+    }
+  }
 
   // Payment
-  @POST('/payments')
-  Future<PaymentResponse> processPayment(@Body() PaymentRequest request);
+  Future<PaymentResponse> processPayment(PaymentRequest request) async {
+    try {
+      final response = await _dio.post(
+        '/payments',
+        data: request.toJson(),
+      );
+      return PaymentResponse.fromJson(response.data);
+    } catch (e) {
+      rethrow;
+    }
+  }
 
-  @GET('/payments/{paymentId}')
-  Future<PaymentResponse> getPaymentStatus(
-    @Path('paymentId') String paymentId,
-  );
+  Future<PaymentResponse> getPaymentStatus(String paymentId) async {
+    try {
+      final response = await _dio.get('/payments/$paymentId');
+      return PaymentResponse.fromJson(response.data);
+    } catch (e) {
+      rethrow;
+    }
+  }
 }

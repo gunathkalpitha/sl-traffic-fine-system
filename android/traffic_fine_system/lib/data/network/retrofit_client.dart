@@ -21,7 +21,6 @@ class RetrofitClient {
       LogInterceptor(
         requestBody: true,
         responseBody: true,
-        logPrint: (obj) => print(obj),
       ),
     ]);
 
