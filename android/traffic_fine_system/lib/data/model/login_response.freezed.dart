@@ -23,9 +23,9 @@ mixin _$LoginResponse {
   String get accessToken => throw _privateConstructorUsedError;
   String get tokenType => throw _privateConstructorUsedError;
   int get expiresIn => throw _privateConstructorUsedError;
-  String get officerName => throw _privateConstructorUsedError;
-  String get badgeNumber => throw _privateConstructorUsedError;
-  String get district => throw _privateConstructorUsedError;
+  String get driverName => throw _privateConstructorUsedError;
+  String get licenseNumber => throw _privateConstructorUsedError;
+  String get email => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -43,9 +43,9 @@ abstract class $LoginResponseCopyWith<$Res> {
       {String accessToken,
       String tokenType,
       int expiresIn,
-      String officerName,
-      String badgeNumber,
-      String district});
+      String driverName,
+      String licenseNumber,
+      String email});
 }
 
 /// @nodoc
@@ -64,9 +64,9 @@ class _$LoginResponseCopyWithImpl<$Res, $Val extends LoginResponse>
     Object? accessToken = null,
     Object? tokenType = null,
     Object? expiresIn = null,
-    Object? officerName = null,
-    Object? badgeNumber = null,
-    Object? district = null,
+    Object? driverName = null,
+    Object? licenseNumber = null,
+    Object? email = null,
   }) {
     return _then(_value.copyWith(
       accessToken: null == accessToken
@@ -81,17 +81,17 @@ class _$LoginResponseCopyWithImpl<$Res, $Val extends LoginResponse>
           ? _value.expiresIn
           : expiresIn // ignore: cast_nullable_to_non_nullable
               as int,
-      officerName: null == officerName
-          ? _value.officerName
-          : officerName // ignore: cast_nullable_to_non_nullable
+      driverName: null == driverName
+          ? _value.driverName
+          : driverName // ignore: cast_nullable_to_non_nullable
               as String,
-      badgeNumber: null == badgeNumber
-          ? _value.badgeNumber
-          : badgeNumber // ignore: cast_nullable_to_non_nullable
+      licenseNumber: null == licenseNumber
+          ? _value.licenseNumber
+          : licenseNumber // ignore: cast_nullable_to_non_nullable
               as String,
-      district: null == district
-          ? _value.district
-          : district // ignore: cast_nullable_to_non_nullable
+      email: null == email
+          ? _value.email
+          : email // ignore: cast_nullable_to_non_nullable
               as String,
     ) as $Val);
   }
@@ -109,9 +109,9 @@ abstract class _$$LoginResponseImplCopyWith<$Res>
       {String accessToken,
       String tokenType,
       int expiresIn,
-      String officerName,
-      String badgeNumber,
-      String district});
+      String driverName,
+      String licenseNumber,
+      String email});
 }
 
 /// @nodoc
@@ -128,9 +128,9 @@ class __$$LoginResponseImplCopyWithImpl<$Res>
     Object? accessToken = null,
     Object? tokenType = null,
     Object? expiresIn = null,
-    Object? officerName = null,
-    Object? badgeNumber = null,
-    Object? district = null,
+    Object? driverName = null,
+    Object? licenseNumber = null,
+    Object? email = null,
   }) {
     return _then(_$LoginResponseImpl(
       accessToken: null == accessToken
@@ -145,17 +145,17 @@ class __$$LoginResponseImplCopyWithImpl<$Res>
           ? _value.expiresIn
           : expiresIn // ignore: cast_nullable_to_non_nullable
               as int,
-      officerName: null == officerName
-          ? _value.officerName
-          : officerName // ignore: cast_nullable_to_non_nullable
+      driverName: null == driverName
+          ? _value.driverName
+          : driverName // ignore: cast_nullable_to_non_nullable
               as String,
-      badgeNumber: null == badgeNumber
-          ? _value.badgeNumber
-          : badgeNumber // ignore: cast_nullable_to_non_nullable
+      licenseNumber: null == licenseNumber
+          ? _value.licenseNumber
+          : licenseNumber // ignore: cast_nullable_to_non_nullable
               as String,
-      district: null == district
-          ? _value.district
-          : district // ignore: cast_nullable_to_non_nullable
+      email: null == email
+          ? _value.email
+          : email // ignore: cast_nullable_to_non_nullable
               as String,
     ));
   }
@@ -168,9 +168,9 @@ class _$LoginResponseImpl implements _LoginResponse {
       {required this.accessToken,
       required this.tokenType,
       required this.expiresIn,
-      required this.officerName,
-      required this.badgeNumber,
-      required this.district});
+      required this.driverName,
+      required this.licenseNumber,
+      required this.email});
 
   factory _$LoginResponseImpl.fromJson(Map<String, dynamic> json) =>
       _$$LoginResponseImplFromJson(json);
@@ -182,15 +182,15 @@ class _$LoginResponseImpl implements _LoginResponse {
   @override
   final int expiresIn;
   @override
-  final String officerName;
+  final String driverName;
   @override
-  final String badgeNumber;
+  final String licenseNumber;
   @override
-  final String district;
+  final String email;
 
   @override
   String toString() {
-    return 'LoginResponse(accessToken: $accessToken, tokenType: $tokenType, expiresIn: $expiresIn, officerName: $officerName, badgeNumber: $badgeNumber, district: $district)';
+    return 'LoginResponse(accessToken: $accessToken, tokenType: $tokenType, expiresIn: $expiresIn, driverName: $driverName, licenseNumber: $licenseNumber, email: $email)';
   }
 
   @override
@@ -204,18 +204,17 @@ class _$LoginResponseImpl implements _LoginResponse {
                 other.tokenType == tokenType) &&
             (identical(other.expiresIn, expiresIn) ||
                 other.expiresIn == expiresIn) &&
-            (identical(other.officerName, officerName) ||
-                other.officerName == officerName) &&
-            (identical(other.badgeNumber, badgeNumber) ||
-                other.badgeNumber == badgeNumber) &&
-            (identical(other.district, district) ||
-                other.district == district));
+            (identical(other.driverName, driverName) ||
+                other.driverName == driverName) &&
+            (identical(other.licenseNumber, licenseNumber) ||
+                other.licenseNumber == licenseNumber) &&
+            (identical(other.email, email) || other.email == email));
   }
 
   @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(runtimeType, accessToken, tokenType,
-      expiresIn, officerName, badgeNumber, district);
+      expiresIn, driverName, licenseNumber, email);
 
   @JsonKey(ignore: true)
   @override
@@ -236,9 +235,9 @@ abstract class _LoginResponse implements LoginResponse {
       {required final String accessToken,
       required final String tokenType,
       required final int expiresIn,
-      required final String officerName,
-      required final String badgeNumber,
-      required final String district}) = _$LoginResponseImpl;
+      required final String driverName,
+      required final String licenseNumber,
+      required final String email}) = _$LoginResponseImpl;
 
   factory _LoginResponse.fromJson(Map<String, dynamic> json) =
       _$LoginResponseImpl.fromJson;
@@ -250,11 +249,11 @@ abstract class _LoginResponse implements LoginResponse {
   @override
   int get expiresIn;
   @override
-  String get officerName;
+  String get driverName;
   @override
-  String get badgeNumber;
+  String get licenseNumber;
   @override
-  String get district;
+  String get email;
   @override
   @JsonKey(ignore: true)
   _$$LoginResponseImplCopyWith<_$LoginResponseImpl> get copyWith =>

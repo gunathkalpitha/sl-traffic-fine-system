@@ -245,9 +245,9 @@ class _UserLoginScreenState extends ConsumerState<UserLoginScreen> {
                         const SizedBox(height: 12),
                         Center(
                           child: GestureDetector(
-                            onTap: () => context.go(AppConstants.routeRoleSelection),
+                            onTap: () => context.go(AppConstants.routeUserRegister),
                             child: const Text(
-                              'Back to role selection',
+                              'Don\'t have an account? Sign up',
                               style: TextStyle(
                                 fontSize: 12,
                                 color: Color(0xFF003087),

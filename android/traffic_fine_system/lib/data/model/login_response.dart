@@ -10,9 +10,9 @@ class LoginResponse with _$LoginResponse {
     required String accessToken,
     required String tokenType,
     required int expiresIn,
-    required String officerName,
-    required String badgeNumber,
-    required String district,
+    required String driverName,
+    required String licenseNumber,
+    required String email,
   }) = _LoginResponse;
 
   factory LoginResponse.fromJson(Map<String, dynamic> json) =>

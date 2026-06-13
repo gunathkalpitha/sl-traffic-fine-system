@@ -111,7 +111,7 @@ class ConfirmationScreen extends StatelessWidget {
                 width: double.infinity,
                 height: 52,
                 child: ElevatedButton(
-                  onPressed: () => context.go(AppConstants.routeMain),
+                  onPressed: () => context.go(AppConstants.routeUserDashboard),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF003087),
                     shape: RoundedRectangleBorder(

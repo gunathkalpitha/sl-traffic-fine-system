@@ -99,7 +99,7 @@ class _UserDashboardState extends ConsumerState<UserDashboard> {
               );
               if (confirmed == true) {
                 await ref.read(tokenManagerProvider).clearAll();
-                if (context.mounted) context.go(AppConstants.routeRoleSelection);
+                if (context.mounted) context.go(AppConstants.routeUserLogin);
               }
             },
           ),

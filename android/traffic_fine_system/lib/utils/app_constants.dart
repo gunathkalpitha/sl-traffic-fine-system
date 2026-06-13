@@ -5,16 +5,9 @@ class AppConstants {
 
   // Routes
   static const String routeSplash = '/';
-  static const String routeRoleSelection = '/role-selection';
-  static const String routeOfficerLogin = '/officer-login';
   static const String routeUserLogin = '/user-login';
-  static const String routeOfficerRegister = '/officer-register';
   static const String routeUserRegister = '/user-register';
-  static const String routeOfficerDashboard = '/officer-dashboard';
   static const String routeUserDashboard = '/user-dashboard';
-  static const String routeLogin = '/login';
-  static const String routeRegister = '/register';
-  static const String routeMain = '/main';
   static const String routeFineEntry = '/fine-entry';
   static const String routeFineDetails = '/fine-details';
   static const String routePayment = '/payment';

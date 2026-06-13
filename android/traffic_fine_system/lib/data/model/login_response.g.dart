@@ -11,9 +11,9 @@ _$LoginResponseImpl _$$LoginResponseImplFromJson(Map<String, dynamic> json) =>
       accessToken: json['accessToken'] as String,
       tokenType: json['tokenType'] as String,
       expiresIn: (json['expiresIn'] as num).toInt(),
-      officerName: json['officerName'] as String,
-      badgeNumber: json['badgeNumber'] as String,
-      district: json['district'] as String,
+      driverName: json['driverName'] as String,
+      licenseNumber: json['licenseNumber'] as String,
+      email: json['email'] as String,
     );
 
 Map<String, dynamic> _$$LoginResponseImplToJson(_$LoginResponseImpl instance) =>
@@ -21,7 +21,7 @@ Map<String, dynamic> _$$LoginResponseImplToJson(_$LoginResponseImpl instance) =>
       'accessToken': instance.accessToken,
       'tokenType': instance.tokenType,
       'expiresIn': instance.expiresIn,
-      'officerName': instance.officerName,
-      'badgeNumber': instance.badgeNumber,
-      'district': instance.district,
+      'driverName': instance.driverName,
+      'licenseNumber': instance.licenseNumber,
+      'email': instance.email,
     };

@@ -11,37 +11,38 @@ class AuthRepository {
 
   AuthRepository(this._apiService, this._tokenManager);
 
-  Future<LoginResponse> login(String username, String password) async {
+  /// Login for drivers/users with license number and password
+  Future<LoginResponse> login(String licenseNumber, String password) async {
     try {
       // Mock login for development (testing credentials)
-      // Username is converted to uppercase in login screen: "sl1234" → "SL1234"
-      if (username == 'SL1234' && password == '1234') {
+      // License number is converted to uppercase in login screen: "dl1234567" → "DL1234567"
+      if (licenseNumber == 'DL1234567' && password == '1234') {
         final mockResponse = LoginResponse(
-          accessToken: 'mock_token_dev_12345',
+          accessToken: 'mock_token_user_12345',
           tokenType: 'Bearer',
           expiresIn: 3600,
-          officerName: 'Test Officer',
-          badgeNumber: 'SL1234',
-          district: 'Western Province',
+          driverName: 'John Doe',
+          licenseNumber: 'DL1234567',
+          email: 'john.doe@example.com',
         );
         await _tokenManager.saveToken(mockResponse.accessToken);
-        await _tokenManager.saveOfficerInfo(
-          name: mockResponse.officerName,
-          badge: mockResponse.badgeNumber,
-          district: mockResponse.district,
+        await _tokenManager.saveUserInfo(
+          name: mockResponse.driverName,
+          email: mockResponse.email,
+          licenseNumber: mockResponse.licenseNumber,
         );
         return mockResponse;
       }
 
       // Real API call (when backend is ready)
       final response = await _apiService.login(
-        LoginRequest(username: username, password: password),
+        LoginRequest(username: licenseNumber, password: password),
       );
       await _tokenManager.saveToken(response.accessToken);
-      await _tokenManager.saveOfficerInfo(
-        name: response.officerName,
-        badge: response.badgeNumber,
-        district: response.district,
+      await _tokenManager.saveUserInfo(
+        name: response.driverName,
+        email: response.email,
+        licenseNumber: response.licenseNumber,
       );
       return response;
     } on DioException catch (e) {
@@ -58,9 +59,9 @@ class AuthRepository {
   Exception _handleDioError(DioException e) {
     switch (e.response?.statusCode) {
       case 401:
-        return Exception('Invalid credentials. Please try again.');
+        return Exception('Invalid license number or password. Please try again.');
       case 403:
-        return Exception('Access denied. Contact administrator.');
+        return Exception('Access denied. Please contact support.');
       default:
         return Exception(e.message ?? 'Network error. Please try again.');
     }

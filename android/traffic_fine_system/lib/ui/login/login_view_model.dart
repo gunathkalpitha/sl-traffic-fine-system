@@ -24,7 +24,7 @@ class LoginViewModel extends StateNotifier<LoginState> {
     state = const LoginState.loading();
     try {
       final response = await _authRepository.login(username, password);
-      state = LoginState.success(response.officerName);
+      state = LoginState.success(response.driverName);
     } catch (e) {
       state = LoginState.error(NetworkUtils.getErrorMessage(e));
     }
