@@ -1,17 +1,19 @@
 // lib/ui/login/user_registration_screen.dart
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../utils/app_constants.dart';
 import '../../utils/extensions.dart';
+import '../../utils/providers.dart';
 
-class UserRegistrationScreen extends StatefulWidget {
+class UserRegistrationScreen extends ConsumerStatefulWidget {
   const UserRegistrationScreen({super.key});
 
   @override
-  State<UserRegistrationScreen> createState() => _UserRegistrationScreenState();
+  ConsumerState<UserRegistrationScreen> createState() => _UserRegistrationScreenState();
 }
 
-class _UserRegistrationScreenState extends State<UserRegistrationScreen> {
+class _UserRegistrationScreenState extends ConsumerState<UserRegistrationScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
@@ -21,6 +23,7 @@ class _UserRegistrationScreenState extends State<UserRegistrationScreen> {
   final _confirmPasswordController = TextEditingController();
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
+  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -42,10 +45,30 @@ class _UserRegistrationScreenState extends State<UserRegistrationScreen> {
       return;
     }
 
-    // Mock registration
-    context.showSnackBar('Registration successful! Please sign in.');
-    if (mounted) {
-      context.go(AppConstants.routeUserLogin);
+    setState(() => _isLoading = true);
+
+    try {
+      final authRepo = ref.read(authRepositoryProvider);
+      await authRepo.signUp(
+        email: _emailController.text.trim(),
+        password: _passwordController.text,
+        fullName: _nameController.text.trim(),
+        licenseNumber: _licenseController.text.trim().toUpperCase(),
+        phoneNumber: _phoneController.text.trim(),
+      );
+
+      if (mounted) {
+        context.showSnackBar('Registration successful! Please sign in.');
+        context.go(AppConstants.routeUserLogin);
+      }
+    } catch (e) {
+      if (mounted) {
+        context.showSnackBar(e.toString().replaceAll('Exception: ', ''), isError: true);
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
     }
   }
 
@@ -227,20 +250,30 @@ class _UserRegistrationScreenState extends State<UserRegistrationScreen> {
                           width: double.infinity,
                           height: 52,
                           child: ElevatedButton(
-                            onPressed: _submit,
+                            onPressed: _isLoading ? null : _submit,
                             style: ElevatedButton.styleFrom(
                               backgroundColor: const Color(0xFF003087),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),
                               ),
                             ),
-                            child: const Text(
-                              'Create Account',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
+                            child: _isLoading
+                                ? const SizedBox(
+                                    width: 22,
+                                    height: 22,
+                                    child: CircularProgressIndicator(
+                                      color: Colors.white,
+                                      strokeWidth: 2.5,
+                                    ),
+                                  )
+                                : const Text(
+                                    'Register',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.white,
+                                    ),
+                                  ),
                           ),
                         ),
                         const SizedBox(height: 16),
@@ -251,10 +284,10 @@ class _UserRegistrationScreenState extends State<UserRegistrationScreen> {
                             GestureDetector(
                               onTap: () => context.go(AppConstants.routeUserLogin),
                               child: const Text(
-                                'Sign in',
+                                'Sign In',
                                 style: TextStyle(
                                   color: Color(0xFF003087),
-                                  fontWeight: FontWeight.w700,
+                                  fontWeight: FontWeight.w800,
                                 ),
                               ),
                             ),

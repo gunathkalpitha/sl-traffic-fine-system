@@ -1,11 +1,10 @@
-// lib/ui/login/user_login_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../data/model/user_role.dart';
 import '../../utils/app_constants.dart';
 import '../../utils/extensions.dart';
 import '../../utils/providers.dart';
-import '../../utils/network_utils.dart';
 
 class UserLoginScreen extends ConsumerStatefulWidget {
   const UserLoginScreen({super.key});
@@ -16,14 +15,14 @@ class UserLoginScreen extends ConsumerStatefulWidget {
 
 class _UserLoginScreenState extends ConsumerState<UserLoginScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _licenseController = TextEditingController();
+  final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _obscurePassword = true;
   bool _isLoading = false;
 
   @override
   void dispose() {
-    _licenseController.dispose();
+    _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
@@ -35,27 +34,20 @@ class _UserLoginScreenState extends ConsumerState<UserLoginScreen> {
     setState(() => _isLoading = true);
 
     try {
-      // Mock user login
-      if (_licenseController.text.toUpperCase() == 'DL1234567' && _passwordController.text == '1234') {
-        final tokenManager = ref.read(tokenManagerProvider);
-        await tokenManager.saveToken('mock_user_token_12345');
-        await tokenManager.saveUserInfo(
-          name: 'John Doe',
-          email: 'john@example.com',
-          licenseNumber: 'DL1234567',
-        );
+      final authRepo = ref.read(authRepositoryProvider);
+      final role = await authRepo.login(_emailController.text.trim(), _passwordController.text);
 
-        if (mounted) {
+      if (mounted) {
+        if (role == UserRole.user) {
           context.go(AppConstants.routeUserDashboard);
-        }
-      } else {
-        if (mounted) {
-          context.showSnackBar('Invalid license or password', isError: true);
+        } else {
+          context.showSnackBar('Access Denied: This app is for Drivers only. Your role: ${role.value}');
+          await authRepo.logout();
         }
       }
     } catch (e) {
       if (mounted) {
-        context.showSnackBar(NetworkUtils.getErrorMessage(e), isError: true);
+        context.showSnackBar(e.toString().replaceAll('Exception: ', ''), isError: true);
       }
     } finally {
       if (mounted) {
@@ -116,7 +108,7 @@ class _UserLoginScreenState extends ConsumerState<UserLoginScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Text(
-                          'Sign in',
+                          'Sign In',
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.w700,
@@ -125,21 +117,21 @@ class _UserLoginScreenState extends ConsumerState<UserLoginScreen> {
                         ),
                         const SizedBox(height: 4),
                         const Text(
-                          'Use your driving license number',
+                          'Sign in with your registered email',
                           style: TextStyle(fontSize: 12, color: Colors.grey),
                         ),
                         const SizedBox(height: 20),
                         TextFormField(
-                          controller: _licenseController,
+                          controller: _emailController,
                           decoration: const InputDecoration(
-                            labelText: 'Driving License Number',
-                            prefixIcon: Icon(Icons.credit_card_rounded),
-                            hintText: 'Test: DL1234567',
+                            labelText: 'Email Address',
+                            prefixIcon: Icon(Icons.email_outlined),
+                            hintText: 'your@email.com',
                           ),
-                          textCapitalization: TextCapitalization.characters,
+                          keyboardType: TextInputType.emailAddress,
                           validator: (value) {
                             if (value == null || value.trim().isEmpty) {
-                              return 'License number is required';
+                              return 'Email is required';
                             }
                             return null;
                           },
@@ -220,6 +212,7 @@ class _UserLoginScreenState extends ConsumerState<UserLoginScreen> {
                                     style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w600,
+                                      color: Colors.white,
                                     ),
                                   ),
                           ),
@@ -234,26 +227,13 @@ class _UserLoginScreenState extends ConsumerState<UserLoginScreen> {
                               child: const Text(
                                 'Register',
                                 style: TextStyle(
-                                  fontSize: 13,
+                                  fontSize: 14,
                                   color: Color(0xFF003087),
-                                  fontWeight: FontWeight.w700,
+                                  fontWeight: FontWeight.w800,
                                 ),
                               ),
                             ),
                           ],
-                        ),
-                        const SizedBox(height: 12),
-                        Center(
-                          child: GestureDetector(
-                            onTap: () => context.go(AppConstants.routeUserRegister),
-                            child: const Text(
-                              'Don\'t have an account? Sign up',
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: Color(0xFF003087),
-                              ),
-                            ),
-                          ),
                         ),
                       ],
                     ),

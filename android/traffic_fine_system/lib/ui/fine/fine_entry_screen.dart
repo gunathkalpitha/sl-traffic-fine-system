@@ -17,13 +17,15 @@ class FineEntryScreen extends ConsumerStatefulWidget {
 class _FineEntryScreenState extends ConsumerState<FineEntryScreen> {
   final _formKey = GlobalKey<FormState>();
   final _refController = TextEditingController();
-  final _categoryController = TextEditingController();
   String? _selectedCategory;
 
   @override
   void dispose() {
     _refController.dispose();
-    _categoryController.dispose();
+    // Reset state to initial so it doesn't immediately navigate if coming back
+    Future.microtask(() {
+      if (mounted) ref.read(fineViewModelProvider.notifier).reset();
+    });
     super.dispose();
   }
 
