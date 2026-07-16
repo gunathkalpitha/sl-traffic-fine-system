@@ -6,6 +6,7 @@ part 'fine.g.dart';
 
 @freezed
 class Fine with _$Fine {
+  @JsonSerializable(fieldRename: FieldRename.snake)
   const factory Fine({
     required String referenceNumber,
     required String categoryId,

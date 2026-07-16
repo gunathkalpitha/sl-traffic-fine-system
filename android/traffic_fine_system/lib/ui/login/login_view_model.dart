@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import '../../data/repository/auth_repository.dart';
 import '../../utils/providers.dart';
-import '../../utils/network_utils.dart';
 
 part 'login_view_model.freezed.dart';
 
@@ -20,13 +19,13 @@ class LoginViewModel extends StateNotifier<LoginState> {
 
   LoginViewModel(this._authRepository) : super(const LoginState.initial());
 
-  Future<void> login(String username, String password) async {
+  Future<void> login(String email, String password) async {
     state = const LoginState.loading();
     try {
-      final response = await _authRepository.login(username, password);
-      state = LoginState.success(response.driverName);
+      await _authRepository.login(email, password);
+      state = const LoginState.success('Logged In');
     } catch (e) {
-      state = LoginState.error(NetworkUtils.getErrorMessage(e));
+      state = LoginState.error(e.toString());
     }
   }
 
