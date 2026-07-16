@@ -39,14 +39,24 @@ final appRouter = GoRouter(
     GoRoute(
       path: AppConstants.routePayment,
       builder: (context, state) {
-        final fine = state.extra as Fine;
+        final fine = state.extra as Fine?;
+        if (fine == null) {
+          return const Scaffold(
+            body: Center(child: Text('Invalid fine data')),
+          );
+        }
         return PaymentScreen(fine: fine);
       },
     ),
     GoRoute(
       path: AppConstants.routeConfirmation,
       builder: (context, state) {
-        final extra = state.extra as Map<String, dynamic>;
+        final extra = state.extra as Map<String, dynamic>?;
+        if (extra == null || extra['fine'] == null || extra['payment'] == null) {
+          return const Scaffold(
+            body: Center(child: Text('Invalid confirmation data')),
+          );
+        }
         return ConfirmationScreen(
           fine: extra['fine'] as Fine,
           paymentResponse: extra['payment'] as PaymentResponse,

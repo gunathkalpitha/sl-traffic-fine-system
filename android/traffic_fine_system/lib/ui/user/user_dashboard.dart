@@ -2,8 +2,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../data/model/fine.dart';
 import '../../utils/app_constants.dart';
-import '../../utils/extensions.dart';
 import '../../utils/providers.dart';
 
 class UserDashboard extends ConsumerStatefulWidget {
@@ -17,26 +17,43 @@ class _UserDashboardState extends ConsumerState<UserDashboard> {
   String userName = '';
   String userEmail = '';
   String licenseNumber = '';
-  int pendingFines = 2;
-  int paidFines = 1;
-  double totalPending = 7500.00;
-  int notificationCount = 2;
+  List<Fine> fines = [];
+  bool isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    _loadUserInfo();
+    _loadData();
   }
 
-  Future<void> _loadUserInfo() async {
+  Future<void> _loadData() async {
     final tokenManager = ref.read(tokenManagerProvider);
     final info = await tokenManager.getUserInfo();
+    
     setState(() {
       userName = info['name'] ?? 'User';
       userEmail = info['email'] ?? '';
       licenseNumber = info['licenseNumber'] ?? '';
     });
+
+    try {
+      final fineRepo = ref.read(fineRepositoryProvider);
+      final list = await fineRepo.getMyFines();
+      setState(() {
+        fines = list;
+        isLoading = false;
+      });
+    } catch (e) {
+      if (mounted) setState(() => isLoading = false);
+    }
   }
+
+  double get totalPending => fines
+      .where((f) => f.status == 'PENDING')
+      .fold(0, (sum, f) => sum + f.amount);
+
+  int get pendingCount => fines.where((f) => f.status == 'PENDING').length;
+  int get paidCount => fines.where((f) => f.status == 'PAID').length;
 
   @override
   Widget build(BuildContext context) {
@@ -47,39 +64,6 @@ class _UserDashboardState extends ConsumerState<UserDashboard> {
         title: const Text('My Fines', style: TextStyle(fontWeight: FontWeight.w700)),
         elevation: 0,
         actions: [
-          Stack(
-            children: [
-              IconButton(
-                icon: const Icon(Icons.notifications_outlined),
-                onPressed: () {
-                  context.showSnackBar('3 new fine notifications');
-                },
-              ),
-              if (notificationCount > 0)
-                Positioned(
-                  right: 8,
-                  top: 8,
-                  child: Container(
-                    width: 20,
-                    height: 20,
-                    decoration: const BoxDecoration(
-                      color: Colors.red,
-                      shape: BoxShape.circle,
-                    ),
-                    child: Center(
-                      child: Text(
-                        '$notificationCount',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-            ],
-          ),
           IconButton(
             icon: const Icon(Icons.logout),
             onPressed: () async {
@@ -98,218 +82,167 @@ class _UserDashboardState extends ConsumerState<UserDashboard> {
                 ),
               );
               if (confirmed == true) {
-                await ref.read(tokenManagerProvider).clearAll();
+                await ref.read(authRepositoryProvider).logout();
                 if (context.mounted) context.go(AppConstants.routeUserLogin);
               }
             },
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            // Header with gradient
-            Container(
-              decoration: const BoxDecoration(
-                color: Color(0xFF003087),
-                borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(24),
-                  bottomRight: Radius.circular(24),
-                ),
-              ),
-              padding: const EdgeInsets.fromLTRB(20, 20, 20, 30),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      CircleAvatar(
-                        radius: 35,
-                        backgroundColor: Colors.white.withValues(alpha: 0.2),
-                        child: const Icon(Icons.person, size: 40, color: Colors.white),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              userName,
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 18,
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              userEmail,
-                              style: const TextStyle(color: Colors.white70, fontSize: 12),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              'License: $licenseNumber',
-                              style: const TextStyle(color: Colors.white70, fontSize: 12),
-                            ),
-                          ],
+      body: isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : RefreshIndicator(
+              onRefresh: _loadData,
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                child: Column(
+                  children: [
+                    // Header
+                    Container(
+                      decoration: const BoxDecoration(
+                        color: Color(0xFF003087),
+                        borderRadius: BorderRadius.only(
+                          bottomLeft: Radius.circular(24),
+                          bottomRight: Radius.circular(24),
                         ),
                       ),
-                    ],
-                  ),
-                  const SizedBox(height: 24),
-                  Row(
-                    children: [
-                      _HeaderStat(title: 'Pending', value: '$pendingFines'),
-                      const SizedBox(width: 16),
-                      _HeaderStat(title: 'Paid', value: '$paidFines'),
-                      const SizedBox(width: 16),
-                      _HeaderStat(title: 'Due', value: 'Rs. ${totalPending.toStringAsFixed(0)}'),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-
-            Padding(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Pay Fine Action
-                  Card(
-                    elevation: 3,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                    child: InkWell(
-                      onTap: () => _showPayFineDialog(context),
-                      borderRadius: BorderRadius.circular(16),
-                      child: Padding(
-                        padding: const EdgeInsets.all(20),
-                        child: Row(
-                          children: [
-                            CircleAvatar(
-                              radius: 28,
-                              backgroundColor: const Color(0xFF003087).withValues(alpha: 0.12),
-                              child: const Icon(Icons.payment_outlined, color: Color(0xFF003087)),
-                            ),
-                            const SizedBox(width: 16),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Text(
-                                    'Pay Your Fine',
-                                    style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    'Enter fine reference to pay online',
-                                    style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
-                                  ),
-                                ],
+                      padding: const EdgeInsets.fromLTRB(20, 20, 20, 30),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              CircleAvatar(
+                                radius: 35,
+                                backgroundColor: Colors.white.withValues(alpha: 0.2),
+                                child: const Icon(Icons.person, size: 40, color: Colors.white),
                               ),
-                            ),
-                            const Icon(Icons.arrow_forward_ios, size: 16),
-                          ],
-                        ),
+                              const SizedBox(width: 16),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      userName,
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      userEmail,
+                                      style: const TextStyle(color: Colors.white70, fontSize: 12),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      'License: $licenseNumber',
+                                      style: const TextStyle(color: Colors.white70, fontSize: 12),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 24),
+                          Row(
+                            children: [
+                              _HeaderStat(title: 'Pending', value: '$pendingCount'),
+                              const SizedBox(width: 16),
+                              _HeaderStat(title: 'Paid', value: '$paidCount'),
+                              const SizedBox(width: 16),
+                              _HeaderStat(title: 'Due', value: 'Rs. ${totalPending.toStringAsFixed(0)}'),
+                            ],
+                          ),
+                        ],
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 24),
 
-                  // Pending Fines
-                  const Text(
-                    'Pending Fines',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: Color(0xFF003087)),
-                  ),
-                  const SizedBox(height: 12),
-                  _FineCard(
-                    referenceNumber: 'REF-2024-001',
-                    category: 'Speeding',
-                    amount: 5000.00,
-                    issuedDate: 'Today at 2:30 PM',
-                    location: 'Colombo Fort',
-                    status: 'PENDING',
-                    onTap: () => context.go(AppConstants.routePayment),
-                  ),
-                  const SizedBox(height: 12),
-                  _FineCard(
-                    referenceNumber: 'REF-2024-002',
-                    category: 'No Helmet',
-                    amount: 2500.00,
-                    issuedDate: '2 days ago',
-                    location: 'Maharagama',
-                    status: 'PENDING',
-                    onTap: () => context.go(AppConstants.routePayment),
-                  ),
-                  const SizedBox(height: 24),
+                    Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Card(
+                            elevation: 3,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                            child: InkWell(
+                              onTap: () => context.go(AppConstants.routeFineEntry),
+                              borderRadius: BorderRadius.circular(16),
+                              child: Padding(
+                                padding: const EdgeInsets.all(20),
+                                child: Row(
+                                  children: [
+                                    CircleAvatar(
+                                      radius: 28,
+                                      backgroundColor: const Color(0xFF003087).withValues(alpha: 0.12),
+                                      child: const Icon(Icons.payment_outlined, color: Color(0xFF003087)),
+                                    ),
+                                    const SizedBox(width: 16),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          const Text(
+                                            'Pay Your Fine',
+                                            style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
+                                          ),
+                                          const SizedBox(height: 4),
+                                          Text(
+                                            'Enter fine reference to pay online',
+                                            style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    const Icon(Icons.arrow_forward_ios, size: 16),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 24),
 
-                  // Paid Fines
-                  const Text(
-                    'Paid Fines',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: Color(0xFF003087)),
-                  ),
-                  const SizedBox(height: 12),
-                  _FineCard(
-                    referenceNumber: 'REF-2024-003',
-                    category: 'Illegal Parking',
-                    amount: 3000.00,
-                    issuedDate: 'Last week',
-                    location: 'Galle Face Green',
-                    status: 'PAID',
-                  ),
-                ],
+                          if (fines.isEmpty)
+                            const Center(
+                              child: Padding(
+                                padding: EdgeInsets.all(40),
+                                child: Text('No fines found.'),
+                              ),
+                            )
+                          else ...[
+                            const Text(
+                              'Fine History',
+                              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: Color(0xFF003087)),
+                            ),
+                            const SizedBox(height: 12),
+                            ...fines.map((fine) => Padding(
+                                  padding: const EdgeInsets.only(bottom: 12),
+                                  child: _FineCard(
+                                    referenceNumber: fine.referenceNumber,
+                                    category: fine.categoryName,
+                                    amount: fine.amount,
+                                    issuedDate: fine.issuedDate,
+                                    location: fine.location,
+                                    status: fine.status,
+                                    onTap: fine.status == 'PENDING'
+                                        ? () => context.go(AppConstants.routePayment, extra: fine)
+                                        : null,
+                                  ),
+                                )),
+                          ],
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _showPayFineDialog(BuildContext context) {
-    final referenceController = TextEditingController();
-    final categoryController = TextEditingController();
-
-    showDialog(
-      context: context,
-      builder: (_) => AlertDialog(
-        title: const Text('Enter Fine Details'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: referenceController,
-              decoration: const InputDecoration(
-                labelText: 'Fine Reference Number',
-                hintText: 'e.g. REF-2024-001',
-                border: OutlineInputBorder(),
-              ),
-            ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: categoryController,
-              decoration: const InputDecoration(
-                labelText: 'Category ID',
-                hintText: 'e.g. FC001',
-                border: OutlineInputBorder(),
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context);
-              context.showSnackBar('Fine fetched successfully');
-            },
-            child: const Text('Search'),
-          ),
-        ],
-      ),
     );
   }
 }
+
 
 class _HeaderStat extends StatelessWidget {
   final String title;
