@@ -20,7 +20,7 @@ public class PaymentService {
     public Payment processPayment(Map<String, Object> body) {
 
         String referenceNumber = body.get("referenceNumber").toString();
-        Long categoryId = Long.valueOf(body.get("categoryId").toString());
+        String categoryId = body.get("categoryId").toString();
 
         // Find the fine
         Fine fine = fineService
@@ -40,15 +40,19 @@ public class PaymentService {
         payment.setFineReference(fine.getReferenceNumber());
         payment.setAmount(fine.getAmount());
         payment.setPaymentMethod(body.get("paymentMethod").toString());
-        payment.setStatus("COMPLETED");
+        payment.setStatus("SUCCESS");
 
         paymentRepository.save(payment);
 
         // Update fine status to PAID
         fineService.markAsPaid(fine);
 
-        // Send email receipt + SMS notification (async, non-blocking)
-        notificationService.notifyPaymentConfirmation(payment, fine);
+        // Trigger asynchronous email + SMS notifications
+        try {
+            notificationService.notifyPaymentConfirmation(payment, fine);
+        } catch (Exception e) {
+            System.err.println("Failed to send payment confirmation notification: " + e.getMessage());
+        }
 
         return payment;
     }

@@ -13,18 +13,21 @@ public class Payment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "payment_id")
     private String paymentId;
 
+    @Column(name = "fine_reference")
     private String fineReference;
 
-    @Column(columnDefinition = "numeric")
+    @Column(name = "amount")
     private Double amount;
 
+    @Column(name = "payment_method")
     private String paymentMethod;
-
-    private String cardHolder;
     
+    @Column(name = "status")
     private String status;
 
-    private OffsetDateTime createdAt = OffsetDateTime.now();
+    @Column(name = "paid_at")
+    private LocalDateTime paidAt = LocalDateTime.now();
 }
