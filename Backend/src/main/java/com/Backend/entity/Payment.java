@@ -13,13 +13,21 @@ public class Payment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
-    @JoinColumn(name = "fine_id")
-    private Fine fine;
+    @Column(name = "payment_id")
+    private String paymentId;
 
+    @Column(name = "fine_reference")
+    private String fineReference;
+
+    @Column(name = "amount")
     private Double amount;
 
+    @Column(name = "payment_method")
     private String paymentMethod;
+    
+    @Column(name = "status")
+    private String status;
 
+    @Column(name = "paid_at")
     private LocalDateTime paidAt = LocalDateTime.now();
 }

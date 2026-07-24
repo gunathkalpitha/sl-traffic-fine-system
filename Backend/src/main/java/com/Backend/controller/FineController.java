@@ -64,4 +64,38 @@ public class FineController {
     public ResponseEntity<List<Officer>> getOfficers() {
         return ResponseEntity.ok(fineService.getAllOfficers());
     }
+
+    // GET /api/fines/driver?driverId={driverId}&email={email}
+    @GetMapping("/driver")
+    public ResponseEntity<?> getFinesByDriver(
+            @RequestParam(required = false) String driverId,
+            @RequestParam(required = false) String email) {
+        try {
+            java.util.UUID uuid = null;
+            if (driverId != null && !driverId.isBlank() && !driverId.equals("undefined")) {
+                uuid = java.util.UUID.fromString(driverId);
+            }
+            List<Fine> fines = fineService.getFinesByDriver(uuid, email);
+            return ResponseEntity.ok(fines);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    // GET /api/fines/driver/stats?driverId={driverId}&email={email}
+    @GetMapping("/driver/stats")
+    public ResponseEntity<?> getDriverStats(
+            @RequestParam(required = false) String driverId,
+            @RequestParam(required = false) String email) {
+        try {
+            java.util.UUID uuid = null;
+            if (driverId != null && !driverId.isBlank() && !driverId.equals("undefined")) {
+                uuid = java.util.UUID.fromString(driverId);
+            }
+            Map<String, Object> stats = fineService.getDriverStats(uuid, email);
+            return ResponseEntity.ok(stats);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 }
