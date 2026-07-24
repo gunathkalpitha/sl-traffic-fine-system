@@ -9,7 +9,6 @@ class AuthRepository {
 
   AuthRepository(this._supabase, this._tokenManager);
 
-  /// Sign up a new driver (Always sets role to USER)
   Future<void> signUp({
     required String email,
     required String password,
@@ -18,28 +17,26 @@ class AuthRepository {
     required String phoneNumber,
   }) async {
     try {
-      // 1. Create user in Supabase Auth with metadata
       final AuthResponse res = await _supabase.auth.signUp(
         email: email,
         password: password,
         data: {
           'full_name': fullName,
           'license_number': licenseNumber.toUpperCase(),
-          'role': 'USER', // Hardcoded as USER for this registration flow
+          'role': 'USER',
         },
       );
 
       final user = res.user;
       if (user == null) throw Exception('Signup failed');
 
-      // 2. Create entry in our profiles table
       await _supabase.from('profiles').upsert({
         'id': user.id,
         'full_name': fullName,
         'license_number': licenseNumber.toUpperCase(),
         'email': email,
         'phone_number': phoneNumber,
-        'role': 'USER', // Ensure database role is USER
+        'role': 'USER',
       });
     } on AuthException catch (e) {
       if (e.message.contains('rate_limit')) {
@@ -51,7 +48,6 @@ class AuthRepository {
     }
   }
 
-  /// Login and check user role
   Future<UserRole> login(String email, String password) async {
     try {
       final response = await _supabase.auth.signInWithPassword(
@@ -60,37 +56,42 @@ class AuthRepository {
       );
 
       if (response.user != null) {
-        // Fetch profile data to verify role
-        final profile = await _supabase
+        final profileResponse = await _supabase
             .from('profiles')
             .select()
             .eq('id', response.user!.id)
-            .single();
+            .maybeSingle();
 
-        final role = UserRole.fromString(profile['role']) ?? UserRole.user;
+        if (profileResponse == null) {
+          throw Exception('User profile not found. Please register through the app.');
+        }
 
-        // Save session and info
+        final role = UserRole.fromString(profileResponse['role']) ?? UserRole.user;
+
         await _tokenManager.saveToken(response.session?.accessToken ?? '');
         await _tokenManager.saveUserRole(role);
         
         if (role == UserRole.user) {
           await _tokenManager.saveUserInfo(
-            name: profile['full_name'],
-            email: profile['email'],
-            licenseNumber: profile['license_number'],
+            name: profileResponse['full_name'],
+            email: profileResponse['email'],
+            licenseNumber: profileResponse['license_number'],
           );
         } else if (role == UserRole.officer) {
           await _tokenManager.saveOfficerInfo(
-            name: profile['full_name'],
-            badge: profile['license_number'], // Using license number field as badge for officers
+            name: profileResponse['full_name'],
+            badge: profileResponse['license_number'],
             district: 'Not Assigned',
           );
         }
 
         return role;
       }
-      throw Exception('Login failed');
+      throw Exception('Authentication failed');
+    } on AuthException catch (e) {
+      throw Exception(e.message);
     } catch (e) {
+      if (e.toString().contains('profile not found')) rethrow;
       throw Exception('Login failed: Invalid email or password');
     }
   }

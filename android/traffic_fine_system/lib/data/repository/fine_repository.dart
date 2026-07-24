@@ -1,4 +1,3 @@
-// lib/data/repository/fine_repository.dart
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../model/fine.dart';
 
@@ -7,7 +6,6 @@ class FineRepository {
 
   FineRepository(this._supabase);
 
-  /// Fetch fine details by reference number and category for the lookup screen
   Future<Fine> getFineDetails({
     required String referenceNumber,
     required String categoryId,
@@ -26,16 +24,15 @@ class FineRepository {
     }
   }
 
-  /// Fetch all fines for the currently logged in driver
   Future<List<Fine>> getMyFines() async {
     try {
-      final userId = _supabase.auth.currentUser?.id;
-      if (userId == null) return [];
+      final user = _supabase.auth.currentUser;
+      if (user == null) return [];
 
       final List<dynamic> data = await _supabase
           .from('fines')
           .select()
-          .eq('driver_id', userId)
+          .or('driver_id.eq.${user.id},driver_email.eq.${user.email}')
           .order('issued_date', ascending: false);
 
       return data.map((json) => Fine.fromJson(json)).toList();

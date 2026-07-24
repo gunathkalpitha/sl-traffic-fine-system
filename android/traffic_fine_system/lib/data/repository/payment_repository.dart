@@ -1,4 +1,3 @@
-// lib/data/repository/payment_repository.dart
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../model/payment_request.dart';
 import '../model/payment_response.dart';
@@ -10,7 +9,6 @@ class PaymentRepository {
 
   Future<PaymentResponse> processPayment(PaymentRequest request) async {
     try {
-      // 1. Check if fine is already paid
       final fineData = await _supabase
           .from('fines')
           .select('status')
@@ -21,10 +19,8 @@ class PaymentRepository {
         throw Exception('This fine has already been paid.');
       }
 
-      // 2. Mock payment processing
       final paymentId = 'PAY-${DateTime.now().millisecondsSinceEpoch}';
       
-      // 3. Insert payment record
       await _supabase.from('payments').insert({
         'payment_id': paymentId,
         'fine_reference': request.fineReferenceNumber,
@@ -33,7 +29,6 @@ class PaymentRepository {
         'status': 'SUCCESS',
       });
 
-      // 4. Update fine status to PAID
       await _supabase
           .from('fines')
           .update({'status': 'PAID'})

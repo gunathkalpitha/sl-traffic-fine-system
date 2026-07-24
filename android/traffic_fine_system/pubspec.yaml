@@ -38,6 +38,10 @@ dependencies:
   # Fonts
   google_fonts: ^6.1.0
 
+  # QR Code & Animations
+  qr_flutter: ^4.1.0
+  lottie: ^3.1.2
+
   # Internationalization
   intl: ^0.20.2
 

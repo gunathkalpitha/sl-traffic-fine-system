@@ -29,6 +29,7 @@ mixin _$Fine {
   String get officerBadge => throw _privateConstructorUsedError;
   String get issuedDate => throw _privateConstructorUsedError;
   String get location => throw _privateConstructorUsedError;
+  String? get driverEmail => throw _privateConstructorUsedError;
   String get status => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -51,6 +52,7 @@ abstract class $FineCopyWith<$Res> {
       String officerBadge,
       String issuedDate,
       String location,
+      String? driverEmail,
       String status});
 }
 
@@ -76,6 +78,7 @@ class _$FineCopyWithImpl<$Res, $Val extends Fine>
     Object? officerBadge = null,
     Object? issuedDate = null,
     Object? location = null,
+    Object? driverEmail = freezed,
     Object? status = null,
   }) {
     return _then(_value.copyWith(
@@ -115,6 +118,10 @@ class _$FineCopyWithImpl<$Res, $Val extends Fine>
           ? _value.location
           : location // ignore: cast_nullable_to_non_nullable
               as String,
+      driverEmail: freezed == driverEmail
+          ? _value.driverEmail
+          : driverEmail // ignore: cast_nullable_to_non_nullable
+              as String?,
       status: null == status
           ? _value.status
           : status // ignore: cast_nullable_to_non_nullable
@@ -140,6 +147,7 @@ abstract class _$$FineImplCopyWith<$Res> implements $FineCopyWith<$Res> {
       String officerBadge,
       String issuedDate,
       String location,
+      String? driverEmail,
       String status});
 }
 
@@ -162,6 +170,7 @@ class __$$FineImplCopyWithImpl<$Res>
     Object? officerBadge = null,
     Object? issuedDate = null,
     Object? location = null,
+    Object? driverEmail = freezed,
     Object? status = null,
   }) {
     return _then(_$FineImpl(
@@ -201,6 +210,10 @@ class __$$FineImplCopyWithImpl<$Res>
           ? _value.location
           : location // ignore: cast_nullable_to_non_nullable
               as String,
+      driverEmail: freezed == driverEmail
+          ? _value.driverEmail
+          : driverEmail // ignore: cast_nullable_to_non_nullable
+              as String?,
       status: null == status
           ? _value.status
           : status // ignore: cast_nullable_to_non_nullable
@@ -210,7 +223,8 @@ class __$$FineImplCopyWithImpl<$Res>
 }
 
 /// @nodoc
-@JsonSerializable()
+
+@JsonSerializable(fieldRename: FieldRename.snake)
 class _$FineImpl implements _Fine {
   const _$FineImpl(
       {required this.referenceNumber,
@@ -222,6 +236,7 @@ class _$FineImpl implements _Fine {
       required this.officerBadge,
       required this.issuedDate,
       required this.location,
+      this.driverEmail,
       this.status = 'PENDING'});
 
   factory _$FineImpl.fromJson(Map<String, dynamic> json) =>
@@ -246,12 +261,14 @@ class _$FineImpl implements _Fine {
   @override
   final String location;
   @override
+  final String? driverEmail;
+  @override
   @JsonKey()
   final String status;
 
   @override
   String toString() {
-    return 'Fine(referenceNumber: $referenceNumber, categoryId: $categoryId, categoryName: $categoryName, amount: $amount, violationDescription: $violationDescription, officerName: $officerName, officerBadge: $officerBadge, issuedDate: $issuedDate, location: $location, status: $status)';
+    return 'Fine(referenceNumber: $referenceNumber, categoryId: $categoryId, categoryName: $categoryName, amount: $amount, violationDescription: $violationDescription, officerName: $officerName, officerBadge: $officerBadge, issuedDate: $issuedDate, location: $location, driverEmail: $driverEmail, status: $status)';
   }
 
   @override
@@ -276,6 +293,8 @@ class _$FineImpl implements _Fine {
                 other.issuedDate == issuedDate) &&
             (identical(other.location, location) ||
                 other.location == location) &&
+            (identical(other.driverEmail, driverEmail) ||
+                other.driverEmail == driverEmail) &&
             (identical(other.status, status) || other.status == status));
   }
 
@@ -292,6 +311,7 @@ class _$FineImpl implements _Fine {
       officerBadge,
       issuedDate,
       location,
+      driverEmail,
       status);
 
   @JsonKey(ignore: true)
@@ -319,6 +339,7 @@ abstract class _Fine implements Fine {
       required final String officerBadge,
       required final String issuedDate,
       required final String location,
+      final String? driverEmail,
       final String status}) = _$FineImpl;
 
   factory _Fine.fromJson(Map<String, dynamic> json) = _$FineImpl.fromJson;
@@ -341,6 +362,8 @@ abstract class _Fine implements Fine {
   String get issuedDate;
   @override
   String get location;
+  @override
+  String? get driverEmail;
   @override
   String get status;
   @override
