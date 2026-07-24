@@ -42,7 +42,7 @@ class _FineEntryScreenState extends ConsumerState<FineEntryScreen> {
   Widget build(BuildContext context) {
     ref.listen<FineState>(fineViewModelProvider, (_, state) {
       state.whenOrNull(
-        loaded: (fine) => context.go(
+        loaded: (fine) => context.push(
           AppConstants.routePayment,
           extra: fine,
         ),

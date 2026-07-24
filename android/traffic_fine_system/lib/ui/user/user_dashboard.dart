@@ -97,13 +97,23 @@ class _UserDashboardState extends ConsumerState<UserDashboard> {
                 physics: const AlwaysScrollableScrollPhysics(),
                 child: Column(
                   children: [
-                    // Header
+                    // Header with Background Image
                     Container(
-                      decoration: const BoxDecoration(
-                        color: Color(0xFF003087),
-                        borderRadius: BorderRadius.only(
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF003087),
+                        borderRadius: const BorderRadius.only(
                           bottomLeft: Radius.circular(24),
                           bottomRight: Radius.circular(24),
+                        ),
+                        image: DecorationImage(
+                          image: const NetworkImage(
+                            'https://images.unsplash.com/photo-1517649763962-0c623066013b?q=80&w=1000&auto=format&fit=crop',
+                          ),
+                          fit: BoxFit.cover,
+                          colorFilter: ColorFilter.mode(
+                            const Color(0xFF003087).withOpacity(0.85),
+                            BlendMode.srcOver,
+                          ),
                         ),
                       ),
                       padding: const EdgeInsets.fromLTRB(20, 20, 20, 30),
@@ -227,7 +237,7 @@ class _UserDashboardState extends ConsumerState<UserDashboard> {
                                     location: fine.location,
                                     status: fine.status,
                                     onTap: fine.status == 'PENDING'
-                                        ? () => context.go(AppConstants.routePayment, extra: fine)
+                                        ? () => context.push(AppConstants.routePayment, extra: fine)
                                         : null,
                                   ),
                                 )),
@@ -346,23 +356,39 @@ class _FineCard extends StatelessWidget {
               const SizedBox(height: 12),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Amount', style: TextStyle(color: Colors.grey.shade600, fontSize: 11)),
-                      Text(
-                        'Rs. ${amount.toStringAsFixed(2)}',
-                        style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14),
-                      ),
-                    ],
+                  Expanded(
+                    flex: 2,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Amount', style: TextStyle(color: Colors.grey.shade600, fontSize: 11)),
+                        Text(
+                          'Rs. ${amount.toStringAsFixed(2)}',
+                          style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
                   ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Text('Issued', style: TextStyle(color: Colors.grey.shade600, fontSize: 11)),
-                      Text(issuedDate, style: const TextStyle(fontSize: 12)),
-                    ],
+                  const SizedBox(width: 12),
+                  Expanded(
+                    flex: 3,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Text('Issued', style: TextStyle(color: Colors.grey.shade600, fontSize: 11)),
+                        Text(
+                          issuedDate,
+                          style: const TextStyle(fontSize: 12),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          textAlign: TextAlign.end,
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
