@@ -73,6 +73,7 @@ public class FineService {
         fine.setViolationDescription("Vehicle: " + fine.getVehicleNumber() + " | Driver: " + fine.getDriverName() + phoneSuffix);
         
         fine.setAmount(category.getFineAmount());
+        fine.setViolationDescription(category.getDescription());
         fine.setStatus("PENDING");
 
         Fine savedFine = fineRepository.save(fine);

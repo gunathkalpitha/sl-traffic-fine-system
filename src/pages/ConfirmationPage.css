@@ -1,0 +1,33 @@
+.confirmation-page__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-top: 1.25rem;
+  border-top: 1px solid var(--color-border);
+  padding-top: 1.25rem;
+}
+
+.confirmation-page__print-btn {
+  width: 100%;
+  padding: 0.65rem 1rem;
+  background: #fff;
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius);
+  font-size: 0.9rem;
+  color: var(--color-text);
+  transition: background 0.15s;
+  min-height: 44px;
+}
+
+.confirmation-page__print-btn:hover {
+  background: var(--color-bg);
+}
+
+@media print {
+  .app-header,
+  .app-footer,
+  .stepper,
+  .confirmation-page__actions {
+    display: none;
+  }
+}

@@ -16,6 +16,10 @@ public class Fine {
 
     @Column(name = "reference_number")
     private String referenceNumber;
+    
+    private String categoryId;
+    
+    private String categoryName;
 
     @Column(name = "amount")
     private Double amount;

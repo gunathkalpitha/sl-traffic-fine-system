@@ -1,0 +1,406 @@
+// lib/ui/user/user_dashboard.dart
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import '../../data/model/fine.dart';
+import '../../utils/app_constants.dart';
+import '../../utils/providers.dart';
+
+class UserDashboard extends ConsumerStatefulWidget {
+  const UserDashboard({super.key});
+
+  @override
+  ConsumerState<UserDashboard> createState() => _UserDashboardState();
+}
+
+class _UserDashboardState extends ConsumerState<UserDashboard> {
+  String userName = '';
+  String userEmail = '';
+  String licenseNumber = '';
+  List<Fine> fines = [];
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadData();
+  }
+
+  Future<void> _loadData() async {
+    final tokenManager = ref.read(tokenManagerProvider);
+    final info = await tokenManager.getUserInfo();
+    
+    setState(() {
+      userName = info['name'] ?? 'User';
+      userEmail = info['email'] ?? '';
+      licenseNumber = info['licenseNumber'] ?? '';
+    });
+
+    try {
+      final fineRepo = ref.read(fineRepositoryProvider);
+      final list = await fineRepo.getMyFines();
+      setState(() {
+        fines = list;
+        isLoading = false;
+      });
+    } catch (e) {
+      if (mounted) setState(() => isLoading = false);
+    }
+  }
+
+  double get totalPending => fines
+      .where((f) => f.status == 'PENDING')
+      .fold(0, (sum, f) => sum + f.amount);
+
+  int get pendingCount => fines.where((f) => f.status == 'PENDING').length;
+  int get paidCount => fines.where((f) => f.status == 'PAID').length;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: const Color(0xFF003087),
+        foregroundColor: Colors.white,
+        title: const Text('My Fines', style: TextStyle(fontWeight: FontWeight.w700)),
+        elevation: 0,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: () async {
+              final confirmed = await showDialog<bool>(
+                context: context,
+                builder: (_) => AlertDialog(
+                  title: const Text('Sign Out'),
+                  content: const Text('Are you sure you want to sign out?'),
+                  actions: [
+                    TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
+                    TextButton(
+                      onPressed: () => Navigator.pop(context, true),
+                      child: const Text('Sign Out', style: TextStyle(color: Colors.red)),
+                    ),
+                  ],
+                ),
+              );
+              if (confirmed == true) {
+                await ref.read(authRepositoryProvider).logout();
+                if (context.mounted) context.go(AppConstants.routeUserLogin);
+              }
+            },
+          ),
+        ],
+      ),
+      body: isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : RefreshIndicator(
+              onRefresh: _loadData,
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                child: Column(
+                  children: [
+                    // Header with Background Image
+                    Container(
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF003087),
+                        borderRadius: const BorderRadius.only(
+                          bottomLeft: Radius.circular(24),
+                          bottomRight: Radius.circular(24),
+                        ),
+                        image: DecorationImage(
+                          image: const NetworkImage(
+                            'https://images.unsplash.com/photo-1517649763962-0c623066013b?q=80&w=1000&auto=format&fit=crop',
+                          ),
+                          fit: BoxFit.cover,
+                          colorFilter: ColorFilter.mode(
+                            const Color(0xFF003087).withOpacity(0.85),
+                            BlendMode.srcOver,
+                          ),
+                        ),
+                      ),
+                      padding: const EdgeInsets.fromLTRB(20, 20, 20, 30),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              CircleAvatar(
+                                radius: 35,
+                                backgroundColor: Colors.white.withValues(alpha: 0.2),
+                                child: const Icon(Icons.person, size: 40, color: Colors.white),
+                              ),
+                              const SizedBox(width: 16),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      userName,
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      userEmail,
+                                      style: const TextStyle(color: Colors.white70, fontSize: 12),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      'License: $licenseNumber',
+                                      style: const TextStyle(color: Colors.white70, fontSize: 12),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 24),
+                          Row(
+                            children: [
+                              _HeaderStat(title: 'Pending', value: '$pendingCount'),
+                              const SizedBox(width: 16),
+                              _HeaderStat(title: 'Paid', value: '$paidCount'),
+                              const SizedBox(width: 16),
+                              _HeaderStat(title: 'Due', value: 'Rs. ${totalPending.toStringAsFixed(0)}'),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Card(
+                            elevation: 3,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                            child: InkWell(
+                              onTap: () => context.go(AppConstants.routeFineEntry),
+                              borderRadius: BorderRadius.circular(16),
+                              child: Padding(
+                                padding: const EdgeInsets.all(20),
+                                child: Row(
+                                  children: [
+                                    CircleAvatar(
+                                      radius: 28,
+                                      backgroundColor: const Color(0xFF003087).withValues(alpha: 0.12),
+                                      child: const Icon(Icons.payment_outlined, color: Color(0xFF003087)),
+                                    ),
+                                    const SizedBox(width: 16),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          const Text(
+                                            'Pay Your Fine',
+                                            style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
+                                          ),
+                                          const SizedBox(height: 4),
+                                          Text(
+                                            'Enter fine reference to pay online',
+                                            style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    const Icon(Icons.arrow_forward_ios, size: 16),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 24),
+
+                          if (fines.isEmpty)
+                            const Center(
+                              child: Padding(
+                                padding: EdgeInsets.all(40),
+                                child: Text('No fines found.'),
+                              ),
+                            )
+                          else ...[
+                            const Text(
+                              'Fine History',
+                              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: Color(0xFF003087)),
+                            ),
+                            const SizedBox(height: 12),
+                            ...fines.map((fine) => Padding(
+                                  padding: const EdgeInsets.only(bottom: 12),
+                                  child: _FineCard(
+                                    referenceNumber: fine.referenceNumber,
+                                    category: fine.categoryName,
+                                    amount: fine.amount,
+                                    issuedDate: fine.issuedDate,
+                                    location: fine.location,
+                                    status: fine.status,
+                                    onTap: fine.status == 'PENDING'
+                                        ? () => context.push(AppConstants.routePayment, extra: fine)
+                                        : null,
+                                  ),
+                                )),
+                          ],
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+    );
+  }
+}
+
+
+class _HeaderStat extends StatelessWidget {
+  final String title;
+  final String value;
+
+  const _HeaderStat({required this.title, required this.value});
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: Column(
+        children: [
+          Text(title, style: const TextStyle(color: Colors.white70, fontSize: 12)),
+          const SizedBox(height: 4),
+          Text(
+            value,
+            style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w700),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _FineCard extends StatelessWidget {
+  final String referenceNumber;
+  final String category;
+  final double amount;
+  final String issuedDate;
+  final String location;
+  final String status;
+  final VoidCallback? onTap;
+
+  const _FineCard({
+    required this.referenceNumber,
+    required this.category,
+    required this.amount,
+    required this.issuedDate,
+    required this.location,
+    required this.status,
+    this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final isPaid = status == 'PAID';
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Icon(
+                    Icons.receipt_long_outlined,
+                    color: isPaid ? Colors.green : Colors.orange,
+                    size: 24,
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          referenceNumber,
+                          style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          category,
+                          style: TextStyle(color: Colors.grey.shade600, fontSize: 13),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: isPaid ? Colors.green.withValues(alpha: 0.12) : Colors.orange.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      status,
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 12,
+                        color: isPaid ? Colors.green : Colors.orange,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Expanded(
+                    flex: 2,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Amount', style: TextStyle(color: Colors.grey.shade600, fontSize: 11)),
+                        Text(
+                          'Rs. ${amount.toStringAsFixed(2)}',
+                          style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    flex: 3,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Text('Issued', style: TextStyle(color: Colors.grey.shade600, fontSize: 11)),
+                        Text(
+                          issuedDate,
+                          style: const TextStyle(fontSize: 12),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          textAlign: TextAlign.end,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Text(
+                location,
+                style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
