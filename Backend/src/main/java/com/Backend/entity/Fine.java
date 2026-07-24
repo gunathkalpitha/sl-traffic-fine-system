@@ -2,7 +2,8 @@ package com.Backend.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.util.UUID;
 
 @Entity
 @Table(name = "fines")
@@ -14,26 +15,29 @@ public class Fine {
     private Long id;
 
     private String referenceNumber;
+    
+    private String categoryId;
+    
+    private String categoryName;
 
-    @ManyToOne
-    @JoinColumn(name = "category_id")
-    private Category category;
-
-    @ManyToOne
-    @JoinColumn(name = "officer_id")
-    private Officer officer;
-
-    @ManyToOne
-    @JoinColumn(name = "district_id")
-    private District district;
-
-    private String vehicleNumber;
-
-    private String driverName;
-
+    @Column(columnDefinition = "numeric")
     private Double amount;
+
+    private String violationDescription;
+
+    private String officerName;
+
+    private String officerBadge;
+
+    private OffsetDateTime issuedDate;
+
+    private String location;
 
     private String status; // PENDING or PAID
 
-    private LocalDateTime issuedAt = LocalDateTime.now();
+    private UUID driverId;
+
+    private String driverEmail;
+
+    private OffsetDateTime createdAt = OffsetDateTime.now();
 }

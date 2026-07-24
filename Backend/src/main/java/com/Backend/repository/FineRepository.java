@@ -10,9 +10,4 @@ public interface FineRepository
 
     // Find fine by reference number
     Optional<Fine> findByReferenceNumber(String referenceNumber);
-
-    // Find fine by reference number and category
-    Optional<Fine> findByReferenceNumberAndCategory_Id(
-            String referenceNumber, Long categoryId
-    );
 }

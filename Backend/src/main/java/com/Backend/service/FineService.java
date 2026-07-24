@@ -41,12 +41,14 @@ public class FineService {
 
         Fine fine = new Fine();
         fine.setReferenceNumber(generateReference());
-        fine.setCategory(category);
-        fine.setOfficer(officer);
-        fine.setDistrict(district);
-        fine.setVehicleNumber(body.get("vehicleNumber").toString());
-        fine.setDriverName(body.get("driverName").toString());
+        fine.setCategoryId(String.valueOf(category.getId()));
+        fine.setCategoryName(category.getName());
+        fine.setOfficerName(officer.getName());
+        fine.setOfficerBadge(officer.getBadgeNumber());
+        fine.setLocation(district.getName());
+        fine.setDriverEmail(body.get("driverEmail") != null ? body.get("driverEmail").toString() : null);
         fine.setAmount(category.getFineAmount());
+        fine.setViolationDescription(category.getDescription());
         fine.setStatus("PENDING");
 
         return fineRepository.save(fine);
@@ -60,10 +62,8 @@ public class FineService {
     // Get fine by reference number and category
     public Optional<Fine> getFineByReferenceAndCategory(
             String referenceNumber, Long categoryId) {
-        return fineRepository
-                .findByReferenceNumberAndCategory_Id(
-                        referenceNumber, categoryId
-                );
+        return fineRepository.findByReferenceNumber(referenceNumber)
+                .filter(f -> String.valueOf(categoryId).equals(f.getCategoryId()));
     }
 
     // Get all categories

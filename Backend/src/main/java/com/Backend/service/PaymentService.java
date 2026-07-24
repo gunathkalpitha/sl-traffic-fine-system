@@ -15,6 +15,7 @@ public class PaymentService {
 
     private final PaymentRepository paymentRepository;
     private final FineService fineService;
+    private final NotificationService notificationService;
 
     public Payment processPayment(Map<String, Object> body) {
 
@@ -35,15 +36,21 @@ public class PaymentService {
 
         // Save payment record
         Payment payment = new Payment();
-        payment.setFine(fine);
+        payment.setPaymentId("PAY-" + System.currentTimeMillis());
+        payment.setFineReference(fine.getReferenceNumber());
         payment.setAmount(fine.getAmount());
         payment.setPaymentMethod(body.get("paymentMethod").toString());
+        payment.setStatus("COMPLETED");
 
         paymentRepository.save(payment);
 
         // Update fine status to PAID
         fineService.markAsPaid(fine);
 
+        // Send email receipt + SMS notification (async, non-blocking)
+        notificationService.notifyPaymentConfirmation(payment, fine);
+
         return payment;
     }
 }
+

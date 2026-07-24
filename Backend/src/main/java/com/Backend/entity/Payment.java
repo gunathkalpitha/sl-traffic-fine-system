@@ -2,7 +2,7 @@ package com.Backend.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 @Entity
 @Table(name = "payments")
@@ -13,13 +13,18 @@ public class Payment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
-    @JoinColumn(name = "fine_id")
-    private Fine fine;
+    private String paymentId;
 
+    private String fineReference;
+
+    @Column(columnDefinition = "numeric")
     private Double amount;
 
     private String paymentMethod;
 
-    private LocalDateTime paidAt = LocalDateTime.now();
+    private String cardHolder;
+    
+    private String status;
+
+    private OffsetDateTime createdAt = OffsetDateTime.now();
 }
