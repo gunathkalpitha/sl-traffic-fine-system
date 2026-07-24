@@ -1,6 +1,5 @@
 // lib/utils/app_constants.dart
 class AppConstants {
-  // Replace with your actual backend URL
   static const String baseUrl = 'https://api.sltraficfines.lk/api/v1';
 
   // Routes

@@ -7,28 +7,30 @@ part of 'fine.dart';
 // **************************************************************************
 
 _$FineImpl _$$FineImplFromJson(Map<String, dynamic> json) => _$FineImpl(
-      referenceNumber: json['referenceNumber'] as String,
-      categoryId: json['categoryId'] as String,
-      categoryName: json['categoryName'] as String,
+      referenceNumber: json['reference_number'] as String,
+      categoryId: json['category_id'] as String,
+      categoryName: json['category_name'] as String,
       amount: (json['amount'] as num).toDouble(),
-      violationDescription: json['violationDescription'] as String,
-      officerName: json['officerName'] as String,
-      officerBadge: json['officerBadge'] as String,
-      issuedDate: json['issuedDate'] as String,
+      violationDescription: json['violation_description'] as String,
+      officerName: json['officer_name'] as String,
+      officerBadge: json['officer_badge'] as String,
+      issuedDate: json['issued_date'] as String,
       location: json['location'] as String,
+      driverEmail: json['driver_email'] as String?,
       status: json['status'] as String? ?? 'PENDING',
     );
 
 Map<String, dynamic> _$$FineImplToJson(_$FineImpl instance) =>
     <String, dynamic>{
-      'referenceNumber': instance.referenceNumber,
-      'categoryId': instance.categoryId,
-      'categoryName': instance.categoryName,
+      'reference_number': instance.referenceNumber,
+      'category_id': instance.categoryId,
+      'category_name': instance.categoryName,
       'amount': instance.amount,
-      'violationDescription': instance.violationDescription,
-      'officerName': instance.officerName,
-      'officerBadge': instance.officerBadge,
-      'issuedDate': instance.issuedDate,
+      'violation_description': instance.violationDescription,
+      'officer_name': instance.officerName,
+      'officer_badge': instance.officerBadge,
+      'issued_date': instance.issuedDate,
       'location': instance.location,
+      'driver_email': instance.driverEmail,
       'status': instance.status,
     };

@@ -17,6 +17,7 @@ class Fine with _$Fine {
     required String officerBadge,
     required String issuedDate,
     required String location,
+    String? driverEmail,
     @Default('PENDING') String status,
   }) = _Fine;
 
