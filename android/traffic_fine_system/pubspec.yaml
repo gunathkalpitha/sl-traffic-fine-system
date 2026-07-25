@@ -1,0 +1,63 @@
+name: traffic_fine_system
+description: A Flutter project for traffic fine management system
+publish_to: "none"
+
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.0.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.8
+
+  # Supabase
+  supabase_flutter: ^2.6.0
+
+  # Forms
+  reactive_forms: ^17.0.1
+
+  # Routing
+  go_router: ^14.8.1
+
+  # State Management
+  flutter_riverpod: ^2.6.1
+
+  # HTTP Client
+  dio: ^5.3.1
+
+  # Freezed for immutable models
+  freezed_annotation: ^2.4.1
+  json_annotation: ^4.9.0
+
+  # Secure Storage
+  flutter_secure_storage: ^9.0.0
+
+  # Fonts
+  google_fonts: ^6.1.0
+
+  # QR Code & Animations
+  qr_flutter: ^4.1.0
+  lottie: ^3.1.2
+
+  # Internationalization
+  intl: ^0.20.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^5.0.0
+
+  # Code generators
+  build_runner: ^2.4.6
+  freezed: ^2.4.5
+  json_serializable: ^6.7.1
+
+flutter:
+  uses-material-design: true
+
+  # assets:
+  #   - assets/images/

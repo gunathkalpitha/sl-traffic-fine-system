@@ -1,9 +1,16 @@
 {
+<<<<<<< HEAD
   "name": "admin-portal",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
     "@supabase/supabase-js": "^2.110.5",
+=======
+  "name": "web-payment",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+>>>>>>> a9c6a4f42a2f550d585c0fd6d6195fa039841d31
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
@@ -13,7 +20,10 @@
     "react-dom": "^19.2.7",
     "react-router-dom": "^7.17.0",
     "react-scripts": "5.0.1",
+<<<<<<< HEAD
     "recharts": "^3.8.1",
+=======
+>>>>>>> a9c6a4f42a2f550d585c0fd6d6195fa039841d31
     "web-vitals": "^2.1.4"
   },
   "scripts": {

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import axios from 'axios';
 import { supabase } from './supabaseClient';
 
@@ -91,3 +92,21 @@ export const getOfficers = async () => {
   // map to UI expectation if needed, or pass directly
   return { data: response.data.map(o => ({ id: o.id, name: o.name, badgeNumber: o.badgeNumber })) };
 };
+=======
+import axiosInstance from './axiosInstance';
+
+/**
+ * Look up a fine by its reference number.
+ *
+ * Returns a FineResponseDto:
+ *   { referenceNumber, categoryCode, categoryDescription, amount,
+ *     vehicleNumber, status, issuedAt }
+ *
+ * @param {string} referenceNumber
+ * @returns {Promise<object>}
+ */
+export async function getFineByReferenceNumber(referenceNumber) {
+  const response = await axiosInstance.get(`/api/fines/${referenceNumber}`);
+  return response.data;
+}
+>>>>>>> a9c6a4f42a2f550d585c0fd6d6195fa039841d31
